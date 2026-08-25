@@ -1,0 +1,7 @@
+
+.order-card{padding:16px;border-radius:20px;margin:12px 0}
+.order-meta{display:flex;flex-wrap:wrap;gap:14px;margin:12px 0;color:var(--muted);font-size:13px}
+.status{padding:6px 10px;border-radius:999px;background:rgba(232,196,123,.12);border:1px solid var(--line);color:var(--gold);font-size:11px}
+.order-list{display:grid;gap:10px;margin:16px 0;padding:14px;border-radius:16px;background:rgba(0,0,0,.18)}
+.small{font-size:12px}
+@media(max-width:560px){.order-meta{display:grid}}
