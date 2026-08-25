@@ -1,5 +1,5 @@
 const SUPABASE_URL='https://rugakupxctxbfhbgbksy.supabase.co';
-const SUPABASE_KEY='sb_publishable_9QriLUCED36Lf2MbHKsRdQ_NUYNJhGxG';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1Z2FrdXB4Y3R4YmZoYmdia3N5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2MzMwMDcsImV4cCI6MjEwMzIwOTAwN30.mVWan9bB3zu0J-US6XJ-pVJfAffG1wP-D1Ze_G7-YpU';
 const {createClient}=supabase; const db=createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=s=>document.querySelector(s); const app=$('#app');
 let products=[],cart=JSON.parse(localStorage.getItem('sparkle-cart')||'[]'),user=null,isAdmin=false,currentConv=null;
