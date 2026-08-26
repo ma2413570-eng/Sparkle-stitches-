@@ -115,3 +115,20 @@ async function addAdminAccount(e){e.preventDefault();let email=String(new FormDa
 async function removeAdminAccount(email){if(!confirm('Remove admin access for '+email+'?'))return;let r=await db.from('admin_users').delete().eq('email',email);if(r.error)return toast(r.error.message);toast('Admin removed');adminAccounts()}
 async function adminCustomOrders(){let {data,error}=await db.from('custom_orders').select('*').order('created_at',{ascending:false});if(error)return toast(error.message);$('#adminContent').innerHTML=`<div class="row"><div><div class="eyebrow">Custom work</div><h3>Custom orders</h3></div><button class="btn" onclick="adminHome()">Back</button></div>${(data||[]).map(c=>`<article class="order-card glass"><div class="row"><b>#${esc(c.id.slice(0,8).toUpperCase())}</b><select class="select" style="max-width:180px" onchange="updateCustomOrder('${c.id}',this.value)"><option value="NEW" ${c.status==='NEW'?'selected':''}>NEW</option><option value="REVIEWING" ${c.status==='REVIEWING'?'selected':''}>REVIEWING</option><option value="ACCEPTED" ${c.status==='ACCEPTED'?'selected':''}>ACCEPTED</option><option value="IN_PROGRESS" ${c.status==='IN_PROGRESS'?'selected':''}>IN PROGRESS</option><option value="COMPLETED" ${c.status==='COMPLETED'?'selected':''}>COMPLETED</option><option value="CANCELLED" ${c.status==='CANCELLED'?'selected':''}>CANCELLED</option></select></div><p>${esc(c.message)}</p><div class="product-gallery">${(c.photo_urls||[]).map(u=>`<img src="${esc(u)}" onclick="window.open('${esc(u)}','_blank')">`).join('')}</div></article>`).join('')||'<div class="empty">No custom orders.</div>'}`}
 async function updateCustomOrder(id,status){let r=await db.from('custom_orders').update({status,updated_at:new Date().toISOString()}).eq('id',id);if(r.error)return toast(r.error.message);toast('Custom order updated');adminCustomOrders()}
+// Boot the application after all functions are declared. This is intentionally at the end
+// so a missing optional feature cannot prevent the storefront from rendering.
+(async function boot(){
+  try{
+    const session=await db.auth.getSession();
+    user=session?.data?.session?.user||null;
+    if(user) await refreshAdmin();
+  }catch(e){ console.warn('session restore failed',e); user=null; isAdmin=false; }
+  try{ await loadProducts(); }catch(e){ console.error('product load failed',e); products=[]; render(); }
+  try{
+    db.auth.onAuthStateChange((_event,session)=>{
+      user=session?.user||null;
+      if(!user){isAdmin=false;render();return;}
+      setTimeout(async()=>{await refreshAdmin();render()},0);
+    });
+  }catch(e){ console.warn('auth listener unavailable',e); }
+})();
